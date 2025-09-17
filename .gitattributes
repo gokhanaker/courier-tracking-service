@@ -1,0 +1,7 @@
+# Maven wrapper files
+/mvnw text eol=lf
+*.cmd text eol=crlf
+
+# Compiled class files
+*.jar binary
+*.war binary
