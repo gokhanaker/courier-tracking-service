@@ -20,9 +20,7 @@ public class LocationController {
     @PostMapping
     public ResponseEntity<LocationUpdateResponse> updateLocation(
             @Valid @RequestBody LocationUpdateRequest request) {
-        
-        log.info("Received location update for courier: {}", request.getCourierId());
-        
+                
         LocationUpdateResponse response = locationTrackingService.updateCourierLocation(request);
         return ResponseEntity.ok(response);
     }
