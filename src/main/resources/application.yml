@@ -4,10 +4,10 @@ spring:
 
   # Database Configuration (H2 for development/testing)
   datasource:
-    url: jdbc:h2:mem:courierdb
+    url: jdbc:h2:mem:courier_tracking_db
     driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    username: admin
+    password: password
 
   # JPA Configuration
   jpa:
