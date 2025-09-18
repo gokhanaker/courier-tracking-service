@@ -1,6 +1,5 @@
 package com.couriertracking.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -18,7 +18,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "locations")
+@Table(name = "locations",
+       indexes = {
+           @Index(name = "idx_courier_timestamp", columnList = "courier_id, timestamp"),
+           @Index(name = "idx_timestamp", columnList = "timestamp")
+       })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

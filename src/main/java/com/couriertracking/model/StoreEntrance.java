@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.cglib.core.Local;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,11 +30,11 @@ public class StoreEntrance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courier_id", nullable = false)
-    private Store store;
+    private Courier courier;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
-    private Courier courier;
+    private Store store;
 
     @Column(nullable = false)
     private LocalDateTime entranceTime;
