@@ -23,13 +23,7 @@ public class LocationController {
         
         log.info("Received location update for courier: {}", request.getCourierId());
         
-        try {
-            LocationUpdateResponse response = locationTrackingService.updateCourierLocation(request);
-            return ResponseEntity.ok(response);
-            
-        } catch (RuntimeException e) {
-            log.error("Error updating location: {}", e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        LocationUpdateResponse response = locationTrackingService.updateCourierLocation(request);
+        return ResponseEntity.ok(response);
     }
 }

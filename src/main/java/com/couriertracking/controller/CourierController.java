@@ -21,13 +21,7 @@ public class CourierController {
         
         log.info("Getting total travel distance for courier: {}", courierId);
         
-        try {
-            Double totalDistance = distanceService.getTotalTravelDistance(courierId);
-            return ResponseEntity.ok(totalDistance);
-            
-        } catch (RuntimeException e) {
-            log.error("Error calculating distance for courier {}: {}", courierId, e.getMessage());
-            return ResponseEntity.badRequest().build();
-        }
+        Double totalDistance = distanceService.getTotalTravelDistance(courierId);
+        return ResponseEntity.ok(totalDistance);
     }
 }
