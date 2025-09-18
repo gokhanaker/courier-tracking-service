@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreDto {
+   
    private String name;
-    private Double lat;
-    private Double lng;
+   private Double lat;
+   private Double lng;
 }

@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LocationResponse {
+public class LocationUpdateResponse {
     
     private UUID locationId;
     private UUID courierId;
     private Double latitude;
     private Double longitude;
     private LocalDateTime timestamp;
+    private String message;
 }
