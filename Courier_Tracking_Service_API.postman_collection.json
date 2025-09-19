@@ -1,0 +1,272 @@
+{
+  "info": {
+    "name": "Courier Tracking Service API",
+    "description": "Complete API collection for the Courier Tracking Service - a Spring Boot application that tracks courier locations, calculates travel distances, and logs store entrances.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "CT-SECURE-API-KEY-12345",
+      "type": "string",
+      "description": "API Key for authentication"
+    },
+    {
+      "key": "courierId",
+      "value": "123e4567-e89b-12d3-a456-426614174000",
+      "type": "string",
+      "description": "Sample courier UUID - replace with actual courier ID"
+    }
+  ],
+  "item": [
+    {
+      "name": "Courier Management",
+      "description": "Endpoints for managing couriers",
+      "item": [
+        {
+          "name": "Create Courier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@courier.com\",\n  \"phoneNumber\": \"+905551234567\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/couriers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "couriers"]
+            },
+            "description": "Create a new courier in the system. Required fields: name, email, phoneNumber.\n\nValidation rules:\n- Name: required, not blank\n- Email: valid email format\n- Phone: international format (+country code)"
+          }
+        },
+        {
+          "name": "Get Courier Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/couriers/{{courierId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "couriers", "{{courierId}}"]
+            },
+            "description": "Retrieve detailed information about a specific courier by their UUID."
+          }
+        },
+        {
+          "name": "Get Total Travel Distance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/couriers/{{courierId}}/total-travel-distance",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "couriers",
+                "{{courierId}}",
+                "total-travel-distance"
+              ]
+            },
+            "description": "Get the total travel distance in kilometers for a specific courier."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Location Tracking",
+      "description": "Endpoints for location updates and tracking",
+      "item": [
+        {
+          "name": "Submit Location Update",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 40.9923307,\n  \"longitude\": 29.1244229,\n  \"timestamp\": \"2025-09-19T15:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            },
+            "description": "Submit a new location update for a courier. Records location, calculates distance, and checks for store entrances."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "description": "Pre-configured test scenarios with sample data",
+      "item": [
+        {
+          "name": "1. Create Test Courier",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Courier Alice\",\n  \"email\": \"alice.test@courier.com\",\n  \"phoneNumber\": \"+905551111111\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/couriers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "couriers"]
+            }
+          }
+        },
+        {
+          "name": "2. First Location (Near Migros Metrocity)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 40.9923307,\n  \"longitude\": 29.1244229,\n  \"timestamp\": \"2025-09-19T09:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            }
+          }
+        },
+        {
+          "name": "3. Second Location (Near Migros Levent)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 41.0766019,\n  \"longitude\": 29.0159636,\n  \"timestamp\": \"2025-09-19T09:30:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/locations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "locations"]
+            }
+          }
+        },
+        {
+          "name": "4. Check Total Distance",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/couriers/{{courierId}}/total-travel-distance",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "couriers",
+                "{{courierId}}",
+                "total-travel-distance"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-extract courier ID from create courier response",
+          "if (pm.request.url.path.includes('couriers') && pm.request.method === 'POST') {",
+          "    if (pm.response.code === 201) {",
+          "        const responseJson = pm.response.json();",
+          "        if (responseJson.id) {",
+          "            pm.collectionVariables.set('courierId', responseJson.id);",
+          "            console.log('Courier ID set to: ' + responseJson.id);",
+          "        }",
+          "    }",
+          "}",
+          "",
+          "// Basic response validation",
+          "pm.test('Status code is success', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+          "});",
+          "",
+          "console.log('Response Status: ' + pm.response.code);"
+        ]
+      }
+    }
+  ]
+}

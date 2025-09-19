@@ -40,7 +40,7 @@ server:
 courier-tracking:
   # API Security Configuration
   api:
-    key: "CT-2025-SECURE-API-KEY-12345"
+    key: "CT-SECURE-API-KEY-12345"
     header-name: "X-API-Key"
 
   store:

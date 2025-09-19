@@ -38,11 +38,9 @@ public class StoreDataLoaderService implements CommandLineRunner {
         try {
             // Check if stores already exist
             if (storeRepository.count() > 0) {
-                log.info("Store data already exists. Skipping data load.");
+                log.debug("Store data already exists. Skipping data load.");
                 return;
             }
-
-            log.info("Loading store data from: {}", storeDataFile);
 
             Resource resource = resourceLoader.getResource(storeDataFile);
             InputStream inputStream = resource.getInputStream();

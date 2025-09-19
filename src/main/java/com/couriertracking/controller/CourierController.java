@@ -26,14 +26,12 @@ public class CourierController {
     public ResponseEntity<CourierResponse> createCourier(
             @Valid @RequestBody CourierCreateRequest request) {
         
-        log.info("Creating new courier: {}", request.getName());
         CourierResponse response = courierService.createCourier(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
     @GetMapping("/{courierId}")
     public ResponseEntity<CourierResponse> getCourierById(@PathVariable UUID courierId) {
-        log.info("Getting courier by ID: {}", courierId);
         CourierResponse courier = courierService.getCourierById(courierId);
         return ResponseEntity.ok(courier);
     }
@@ -41,9 +39,7 @@ public class CourierController {
     
     @GetMapping("/{courierId}/total-travel-distance")
     public ResponseEntity<Double> getTotalTravelDistance(@PathVariable UUID courierId) {
-        
-        log.info("Getting total travel distance for courier: {}", courierId);
-        
+                
         Double totalDistance = distanceCalculationService.getTotalTravelDistance(courierId);
         return ResponseEntity.ok(totalDistance);
     }

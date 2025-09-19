@@ -18,9 +18,7 @@ public class CourierService {
     
     private final CourierRepository courierRepository;
     
-    public CourierResponse createCourier(CourierCreateRequest request) {
-        log.info("Creating new courier: {}", request.getName());
-        
+    public CourierResponse createCourier(CourierCreateRequest request) {        
         Courier courier = new Courier();
         courier.setName(request.getName());
         courier.setEmail(request.getEmail());
@@ -32,12 +30,11 @@ public class CourierService {
         return mapToResponse(savedCourier);
     }
     
-    public CourierResponse getCourierById(UUID courierId) {
-        log.debug("Getting courier by ID: {}", courierId);
-        
+    public CourierResponse getCourierById(UUID courierId) {        
         Courier courier = courierRepository.findById(courierId)
             .orElseThrow(() -> new CourierNotFoundException("Courier not found with ID: " + courierId));
         
+        log.info("Retrieved courier with ID: {}", courierId);
         return mapToResponse(courier);
     }
     

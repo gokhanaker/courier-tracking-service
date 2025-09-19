@@ -40,9 +40,6 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String apiKey = request.getHeader(apiKeyHeaderName);
         
-        log.debug("Processing request to: {} with API key: {}", requestURI, 
-                  apiKey != null ? "***" + apiKey.substring(Math.max(0, apiKey.length() - 4)) : "null");
-        
         // Check if API key is provided and valid
         if (apiKey != null && validApiKey.equals(apiKey)) {
             // Create authentication token for valid API key

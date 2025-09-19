@@ -34,7 +34,6 @@ public class DistanceCalculationService {
         // Try to get cached distance first
         var cachedDistance = courierDistanceRepository.findByCourierId(courierId);
         if (cachedDistance.isPresent()) {
-            log.debug("Returning cached distance for courier {}: {} km", courierId, cachedDistance.get().getTotalDistance());
             return cachedDistance.get().getTotalDistance();
         }
         
@@ -87,7 +86,6 @@ public class DistanceCalculationService {
         // Cache the calculated distance
         cacheDistance(courierId, totalDistance);
         
-        log.debug("Calculated and cached total travel distance for courier {}: {} km", courierId, totalDistance);
         return totalDistance;
     }
     
@@ -107,9 +105,6 @@ public class DistanceCalculationService {
             
             courierDistance.setTotalDistance(courierDistance.getTotalDistance() + additionalDistance);
             courierDistanceRepository.save(courierDistance);
-            
-            log.debug("Updated incremental distance for courier {}: +{} km, total: {} km", 
-                courierDistance.getCourier().getId(), additionalDistance, courierDistance.getTotalDistance());
         }
     }
     
@@ -122,7 +117,6 @@ public class DistanceCalculationService {
         courierDistance.setTotalDistance(0.0);
         
         courierDistanceRepository.save(courierDistance);
-        log.debug("Initialized distance tracking for courier {}", courierId);
     }
     
     private void cacheDistance(UUID courierId, Double totalDistance) {
