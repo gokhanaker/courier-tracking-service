@@ -7,6 +7,7 @@ import com.couriertracking.model.Location;
 import com.couriertracking.repository.CourierDistanceRepository;
 import com.couriertracking.repository.CourierRepository;
 import com.couriertracking.repository.LocationRepository;
+import com.couriertracking.util.DistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,7 @@ public class DistanceCalculationService {
             Location previousLocation = locations.get(i - 1);
             Location currentLocation = locations.get(i);
             
-            double segmentDistance = calculateEuclideanDistance(
+            double segmentDistance = DistanceUtils.calculateDistanceInKilometers(
                 previousLocation.getLatitude(), previousLocation.getLongitude(),
                 currentLocation.getLatitude(), currentLocation.getLongitude()
             );
@@ -99,7 +100,7 @@ public class DistanceCalculationService {
         if (recentLocations.size() >= 2) {
             Location previousLocation = recentLocations.get(1); // Second most recent (previous location)
             
-            double additionalDistance = calculateEuclideanDistance(
+            double additionalDistance = DistanceUtils.calculateDistanceInKilometers(
                 previousLocation.getLatitude(), previousLocation.getLongitude(),
                 newLocation.getLatitude(), newLocation.getLongitude()
             );
@@ -140,26 +141,5 @@ public class DistanceCalculationService {
             courierDistance.setTotalDistance(totalDistance);
             courierDistanceRepository.save(courierDistance);
         }
-    }
-    
-    /**
-     * Simple Euclidean distance calculation for case study purposes
-     * Uses basic geometry with lat/lon to meter conversion for Turkey region
-     * @return distance in kilometers
-     */
-    private double calculateEuclideanDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Calculate differences in degrees
-        double deltaLat = lat2 - lat1;
-        double deltaLon = lon2 - lon1;
-        
-        // Convert to approximate meters (for Turkey/Istanbul region ~40° latitude)
-        double latMeters = deltaLat * 111000; // 1 degree latitude ≈ 111km everywhere
-        double lonMeters = deltaLon * 85000;  // 1 degree longitude ≈ 85km at Turkey's latitude
-        
-        // Apply Euclidean distance formula: √((x2-x1)² + (y2-y1)²)
-        double distanceMeters = Math.sqrt(latMeters * latMeters + lonMeters * lonMeters);
-        
-        // Convert to kilometers
-        return distanceMeters / 1000.0;
     }
 }
