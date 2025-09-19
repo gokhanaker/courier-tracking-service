@@ -38,13 +38,18 @@ server:
 
 # Application Specific Configuration
 courier-tracking:
+  # API Security Configuration
+  api:
+    key: "CT-2025-SECURE-API-KEY-12345"
+    header-name: "X-API-Key"
+
   store:
     entrance-radius-meters: 100
     entrance-cooldown-minutes: 1
     data-file: classpath:stores.json
 
   distance:
-    calculation-algorithm: haversine
+    calculation-algorithm: euclidean
     unit: kilometers
 
 # Logging Configuration
