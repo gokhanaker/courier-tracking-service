@@ -2,6 +2,7 @@ package com.couriertracking.controller;
 
 import com.couriertracking.dto.CourierCreateRequest;
 import com.couriertracking.dto.CourierResponse;
+import com.couriertracking.dto.DistanceResponse;
 import com.couriertracking.service.CourierService;
 import com.couriertracking.service.DistanceCalculationService;
 import jakarta.validation.Valid;
@@ -38,9 +39,10 @@ public class CourierController {
     
     
     @GetMapping("/{courierId}/total-travel-distance")
-    public ResponseEntity<Double> getTotalTravelDistance(@PathVariable UUID courierId) {
-                
+    public ResponseEntity<DistanceResponse> getTotalTravelDistance(@PathVariable UUID courierId) {        
         Double totalDistance = distanceCalculationService.getTotalTravelDistance(courierId);
-        return ResponseEntity.ok(totalDistance);
+        DistanceResponse response = DistanceResponse.kilometers(totalDistance);
+        
+        return ResponseEntity.ok(response);
     }
 }
