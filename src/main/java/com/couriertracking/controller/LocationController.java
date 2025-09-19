@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/locations")
+@RequestMapping("/api/locations")
 @RequiredArgsConstructor
 @Slf4j
 public class LocationController {
