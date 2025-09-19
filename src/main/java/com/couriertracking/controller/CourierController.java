@@ -1,6 +1,6 @@
 package com.couriertracking.controller;
 
-import com.couriertracking.service.DistanceService;
+import com.couriertracking.service.DistanceCalculationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +14,14 @@ import java.util.UUID;
 @Slf4j
 public class CourierController {
     
-    private final DistanceService distanceService;
+    private final DistanceCalculationService distanceCalculationService;
     
     @GetMapping("/{courierId}/total-travel-distance")
     public ResponseEntity<Double> getTotalTravelDistance(@PathVariable UUID courierId) {
         
         log.info("Getting total travel distance for courier: {}", courierId);
         
-        Double totalDistance = distanceService.getTotalTravelDistance(courierId);
+        Double totalDistance = distanceCalculationService.getTotalTravelDistance(courierId);
         return ResponseEntity.ok(totalDistance);
     }
 }

@@ -16,4 +16,7 @@ public interface LocationRepository extends JpaRepository<Location, UUID> {
     
     @Query("SELECT l FROM Location l WHERE l.courier.id = :courierId ORDER BY l.timestamp ASC")
     List<Location> findByCourierIdOrderByTimestampAsc(@Param("courierId") UUID courierId);
+    
+    @Query("SELECT l FROM Location l WHERE l.courier.id = :courierId ORDER BY l.timestamp DESC LIMIT 2")
+    List<Location> findTop2ByCourierIdOrderByTimestampDesc(@Param("courierId") UUID courierId);
 }

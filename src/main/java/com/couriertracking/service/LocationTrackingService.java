@@ -23,6 +23,7 @@ public class LocationTrackingService {
     private final LocationRepository locationRepository;
     private final CourierRepository courierRepository;
     private final StoreEntranceService storeEntranceService;
+    private final DistanceCalculationService distanceCalculationService;
     
     @Transactional
     public LocationUpdateResponse updateCourierLocation(LocationUpdateRequest request) {        
@@ -39,6 +40,12 @@ public class LocationTrackingService {
             location.setTimestamp(request.getTimestamp());
             
             Location savedLocation = locationRepository.save(location);
+            
+            // Update distance tracking with the new location
+            distanceCalculationService.updateDistanceForNewLocation(
+                courier.getId(), 
+                savedLocation
+            );
             
             // Check for store entrances
             StoreEntrance storeEntrance = storeEntranceService.checkAndLogStoreEntrance(
