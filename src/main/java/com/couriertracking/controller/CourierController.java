@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/couriers")
+@RequestMapping("/couriers")
 @RequiredArgsConstructor
 @Slf4j
 public class CourierController {

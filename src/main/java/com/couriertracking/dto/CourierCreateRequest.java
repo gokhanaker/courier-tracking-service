@@ -19,6 +19,7 @@ public class CourierCreateRequest {
     @NotBlank(message = "Email is required")
     private String email;
     
+    @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Valid phone number is required")
     private String phoneNumber;
 }
