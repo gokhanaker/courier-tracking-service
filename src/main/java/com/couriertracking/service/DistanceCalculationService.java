@@ -104,7 +104,11 @@ public class DistanceCalculationService {
             );
             
             courierDistance.setTotalDistance(courierDistance.getTotalDistance() + additionalDistance);
+            
             courierDistanceRepository.save(courierDistance);
+
+            log.info("Updated distance for courier {}: +{:.3f} km, total: {:.3f} km",
+                courierDistance.getCourier().getId(), additionalDistance, courierDistance.getTotalDistance());
         }
     }
     
@@ -117,6 +121,9 @@ public class DistanceCalculationService {
         courierDistance.setTotalDistance(0.0);
         
         courierDistanceRepository.save(courierDistance);
+
+        log.info("Initialized distance tracking for courier {} at location ({}, {})",
+            courierId, location.getLatitude(), location.getLongitude());
     }
     
     private void cacheDistance(UUID courierId, Double totalDistance) {
