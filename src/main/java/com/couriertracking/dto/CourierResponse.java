@@ -17,5 +17,4 @@ public class CourierResponse {
     private String email;
     private String phoneNumber;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -44,8 +44,7 @@ public class CourierService {
             courier.getName(),
             courier.getEmail(),
             courier.getPhoneNumber(),
-            courier.getCreatedAt(),
-            courier.getUpdatedAt()
+            courier.getCreatedAt()
         );
     }
 }
