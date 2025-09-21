@@ -25,6 +25,7 @@ public class DistanceCalculationService {
     private final LocationRepository locationRepository;
     private final CourierRepository courierRepository;
     private final CourierDistanceRepository courierDistanceRepository;
+    private final DistanceUtils distanceUtils;
     
     @Transactional(readOnly = true)
     public Double getTotalTravelDistance(UUID courierId) {        
@@ -57,7 +58,7 @@ public class DistanceCalculationService {
             Location currentLocation = recentLocations.get(0);  // Most recent (the new one)
             
             // Calculate distance for this segment only
-            double segmentDistance = DistanceUtils.calculateDistanceInKilometers(
+            double segmentDistance = distanceUtils.calculateDistanceInKilometers(
                 previousLocation.getLatitude(), previousLocation.getLongitude(),
                 currentLocation.getLatitude(), currentLocation.getLongitude()
             );

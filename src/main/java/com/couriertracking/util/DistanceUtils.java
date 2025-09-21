@@ -1,34 +1,37 @@
 package com.couriertracking.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.couriertracking.strategy.DistanceCalculationContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 /**
- * Utility class for distance calculations
- * Provides methods for calculating distances between geographical coordinates
+ * Utility class for distance calculations using Strategy pattern
+ * Delegates distance calculations to the configured strategy
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DistanceUtils {
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class DistanceUtils {
     
-    // Conversion factors for Turkey/Istanbul region (~40° latitude)
-    private static final double METERS_PER_DEGREE_LATITUDE = 111000.0; // 1 degree latitude ≈ 111km everywhere
-    private static final double METERS_PER_DEGREE_LONGITUDE = 85000.0;  // 1 degree longitude ≈ 85km at Turkey's latitude
-    private static final double METERS_TO_KILOMETERS = 1000.0;
+    private final DistanceCalculationContext distanceCalculationContext;
     
-    public static double calculateDistanceInMeters(double lat1, double lon1, double lat2, double lon2) {
-        // Calculate differences in degrees
-        double deltaLat = lat2 - lat1;
-        double deltaLon = lon2 - lon1;
-        
-        // Convert to approximate meters
-        double latMeters = deltaLat * METERS_PER_DEGREE_LATITUDE;
-        double lonMeters = deltaLon * METERS_PER_DEGREE_LONGITUDE;
-        
-        // Apply Euclidean distance formula: √((x2-x1)² + (y2-y1)²)
-        return Math.sqrt(latMeters * latMeters + lonMeters * lonMeters);
+    public double calculateDistanceInMeters(double lat1, double lon1, double lat2, double lon2) {
+        double distanceKm = calculateDistanceInKilometers(lat1, lon1, lat2, lon2);
+        return distanceKm * 1000.0;
     }
     
-    public static double calculateDistanceInKilometers(double lat1, double lon1, double lat2, double lon2) {
-        return calculateDistanceInMeters(lat1, lon1, lat2, lon2) / METERS_TO_KILOMETERS;
+    public double calculateDistanceInKilometers(double lat1, double lon1, double lat2, double lon2) {
+        log.debug("Calculating distance using {}: ({}, {}) to ({}, {})", 
+            distanceCalculationContext.getCurrentAlgorithmName(), lat1, lon1, lat2, lon2);
+        
+        double distance = distanceCalculationContext.calculateDistance(lat1, lon1, lat2, lon2);
+        
+        log.debug("Calculated distance: {:.3f} km using {}", distance, distanceCalculationContext.getCurrentAlgorithmName());
+        return distance;
+    }
+
+    public String getCurrentAlgorithm() {
+        return distanceCalculationContext.getCurrentAlgorithmName();
     }
 }

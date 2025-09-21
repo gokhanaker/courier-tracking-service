@@ -21,6 +21,7 @@ public class StoreEntranceService {
     
     private final StoreRepository storeRepository;
     private final StoreEntranceRepository storeEntranceRepository;
+    private final DistanceUtils distanceUtils;
     
     @Value("${courier-tracking.store.entrance-radius-meters:100}")
     private int entranceRadiusMeters;
@@ -36,7 +37,7 @@ public class StoreEntranceService {
         List<Store> allStores = storeRepository.findAll();
         
         for (Store store : allStores) {
-            double distanceMeters = DistanceUtils.calculateDistanceInMeters(
+            double distanceMeters = distanceUtils.calculateDistanceInMeters(
                 latitude, longitude,
                 store.getLatitude(), store.getLongitude()
             );
