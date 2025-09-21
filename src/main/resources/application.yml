@@ -69,6 +69,7 @@ logging:
     # App logs
     com.couriertracking.service: INFO
     com.couriertracking.controller: INFO
+    com.couriertracking.config.security: INFO
   pattern:
     console: "%d{HH:mm:ss} - %msg%n"
 

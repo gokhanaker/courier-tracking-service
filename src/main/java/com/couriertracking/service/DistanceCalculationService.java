@@ -36,7 +36,7 @@ public class DistanceCalculationService {
         
         if (courierDistance.isPresent()) {
             Double totalDistance = courierDistance.get().getTotalDistance();
-            log.info("Retrieved distance for courier {}: {:.3f} km", courierId, totalDistance);
+            log.info("Retrieved distance for courier {}: {} km", courierId, String.format("%.3f", totalDistance));
             return totalDistance;
         }
 
@@ -67,8 +67,8 @@ public class DistanceCalculationService {
             courierDistance.setTotalDistance(newTotalDistance);
             courierDistanceRepository.save(courierDistance);
             
-            log.debug("Updated distance for courier {}: +{:.3f} km, total: {:.3f} km", 
-                courierId, segmentDistance, newTotalDistance);
+            log.debug("Updated distance for courier {}: +{} km, total: {} km", 
+                courierId, String.format("%.3f", segmentDistance), String.format("%.3f", newTotalDistance));
         } else {
             log.debug("First location for courier {}, distance remains 0.0", courierId);
         }

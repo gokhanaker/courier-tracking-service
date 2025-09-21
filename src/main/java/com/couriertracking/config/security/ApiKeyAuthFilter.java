@@ -17,9 +17,8 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * Custom API Key Authentication Filter
+ * API Key Authentication Filter
  * This filter intercepts HTTP requests and validates the API key provided in the request header.
- * If a valid API key is provided, it sets up the security context with authentication.
  */
 @Component
 @RequiredArgsConstructor
@@ -38,6 +37,7 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
                                   FilterChain filterChain) throws ServletException, IOException {
         
         String requestURI = request.getRequestURI();
+        String method = request.getMethod();
         String apiKey = request.getHeader(apiKeyHeaderName);
         
         // Check if API key is provided and valid
@@ -52,9 +52,13 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
             
             // Set authentication in security context
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Valid API key provided. Authentication set for request: {}", requestURI);
+            log.info("✅ Valid API key provided. Authentication set for request: {} {}", method, requestURI);
         } else {
-            log.debug("No valid API key provided for request: {}", requestURI);
+            if (apiKey == null) {
+                log.error("❌ No API key provided for request: {} {}", method, requestURI);
+            } else {
+                log.error("❌ Invalid API key provided for request: {} {}", method, requestURI);
+            }
         }
         
         // Continue with the filter chain
@@ -64,7 +68,12 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        // Skip filtering for actuator endpoints
-        return path.startsWith("/actuator");
+        boolean skipFilter = path.startsWith("/actuator");
+        
+        if (skipFilter) {
+            log.info("🔄 Skipping API key filter for actuator endpoint: {}", path);
+        }
+        
+        return skipFilter;
     }
 }
