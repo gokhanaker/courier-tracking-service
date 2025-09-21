@@ -21,7 +21,13 @@
       "key": "courierId",
       "value": "123e4567-e89b-12d3-a456-426614174000",
       "type": "string",
-      "description": "Sample courier UUID - replace with actual courier ID"
+      "description": "Dynamically extracted courier UUID from test scenario"
+    },
+    {
+      "key": "totalDistance",
+      "value": "0.0",
+      "type": "string",
+      "description": "Total distance calculated during test scenario"
     }
   ],
   "item": [
@@ -165,7 +171,7 @@
     },
     {
       "name": "Test Scenarios",
-      "description": "Pre-configured test scenarios with sample data",
+      "description": "Complete end-to-end test workflow: Create courier → Submit locations → Calculate distance",
       "item": [
         {
           "name": "1. Create Test Courier",
@@ -190,11 +196,48 @@
               "raw": "{{baseUrl}}/api/couriers",
               "host": ["{{baseUrl}}"],
               "path": ["api", "couriers"]
+            },
+            "description": "Creates a new test courier and automatically extracts the courier ID for subsequent requests"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201 Created\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has courier details\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('id');",
+                  "    pm.expect(responseJson).to.have.property('name');",
+                  "    pm.expect(responseJson).to.have.property('email');",
+                  "    pm.expect(responseJson).to.have.property('phoneNumber');",
+                  "});",
+                  "",
+                  "pm.test(\"Courier ID is valid UUID\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;",
+                  "    pm.expect(responseJson.id).to.match(uuidRegex);",
+                  "});",
+                  "",
+                  "// Auto-extract courier ID for subsequent requests",
+                  "if (pm.response.code === 201) {",
+                  "    const responseJson = pm.response.json();",
+                  "    if (responseJson.id) {",
+                  "        pm.collectionVariables.set('courierId', responseJson.id);",
+                  "        console.log('✅ Courier created successfully with ID: ' + responseJson.id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
+          ]
         },
         {
-          "name": "2. First Location (Near Migros Metrocity)",
+          "name": "2. First Location (Near Ataşehir MMM Migros)",
           "request": {
             "method": "POST",
             "header": [
@@ -210,17 +253,48 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 40.9923307,\n  \"longitude\": 29.1244229,\n  \"timestamp\": \"2025-09-19T09:00:00\"\n}"
+              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 40.9923307,\n  \"longitude\": 29.1244229,\n  \"timestamp\": \"2025-09-21T09:00:00\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/locations",
               "host": ["{{baseUrl}}"],
               "path": ["api", "locations"]
+            },
+            "description": "First location update - positioned exactly at Ataşehir MMM Migros coordinates. This should trigger store entrance logging."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms location update\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('message');",
+                  "    pm.expect(responseJson.message).to.include('updated');",
+                  "});",
+                  "",
+                  "pm.test(\"Store entrance detected\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('storeEntrance');",
+                  "    if (responseJson.storeEntrance) {",
+                  "        pm.expect(responseJson.storeEntrance).to.include('Ataşehir MMM Migros');",
+                  "        console.log('✅ Store entrance detected: ' + responseJson.storeEntrance);",
+                  "    }",
+                  "});",
+                  "",
+                  "console.log('✅ First location submitted successfully');"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
+          ]
         },
         {
-          "name": "3. Second Location (Near Migros Levent)",
+          "name": "3. Second Location (Near Ortaköy MMM Migros)",
           "request": {
             "method": "POST",
             "header": [
@@ -236,14 +310,45 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 41.0766019,\n  \"longitude\": 29.0159636,\n  \"timestamp\": \"2025-09-19T09:30:00\"\n}"
+              "raw": "{\n  \"courierId\": \"{{courierId}}\",\n  \"latitude\": 41.055783,\n  \"longitude\": 29.0210292,\n  \"timestamp\": \"2025-09-21T09:45:00\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/locations",
               "host": ["{{baseUrl}}"],
               "path": ["api", "locations"]
+            },
+            "description": "Second location update - positioned at Ortaköy MMM Migros (45 minutes later). This creates a travel segment for distance calculation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response confirms location update\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('message');",
+                  "    pm.expect(responseJson.message).to.include('updated');",
+                  "});",
+                  "",
+                  "pm.test(\"Store entrance detected\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('storeEntrance');",
+                  "    if (responseJson.storeEntrance) {",
+                  "        pm.expect(responseJson.storeEntrance).to.include('Ortaköy MMM Migros');",
+                  "        console.log('✅ Store entrance detected: ' + responseJson.storeEntrance);",
+                  "    }",
+                  "});",
+                  "",
+                  "console.log('✅ Second location submitted successfully - distance should now be calculated');"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
+          ]
         },
         {
           "name": "4. Check Total Distance",
@@ -265,8 +370,50 @@
                 "{{courierId}}",
                 "total-travel-distance"
               ]
+            },
+            "description": "Retrieves the total travel distance calculated from the courier's location updates. Expected: ~11-12 km between Ataşehir and Ortaköy Migros stores."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has correct distance structure\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('distance');",
+                  "    pm.expect(responseJson).to.have.property('unit');",
+                  "});",
+                  "",
+                  "pm.test(\"Distance is a positive number\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.distance).to.be.a('number');",
+                  "    pm.expect(responseJson.distance).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test(\"Unit is kilometers\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.unit).to.equal('km');",
+                  "});",
+                  "",
+                  "pm.test(\"Distance is reasonable for Istanbul route\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    // Distance between Ataşehir and Ortaköy should be roughly 10-15 km",
+                  "    pm.expect(responseJson.distance).to.be.within(8, 20);",
+                  "    console.log('✅ Total distance calculated: ' + responseJson.distance + ' ' + responseJson.unit);",
+                  "});",
+                  "",
+                  "// Store distance for potential future use",
+                  "const responseJson = pm.response.json();",
+                  "pm.collectionVariables.set('totalDistance', responseJson.distance);"
+                ],
+                "type": "text/javascript"
+              }
             }
-          }
+          ]
         }
       ]
     }
@@ -283,17 +430,36 @@
           "        const responseJson = pm.response.json();",
           "        if (responseJson.id) {",
           "            pm.collectionVariables.set('courierId', responseJson.id);",
-          "            console.log('Courier ID set to: ' + responseJson.id);",
+          "            console.log('🔑 Courier ID extracted and set: ' + responseJson.id);",
           "        }",
           "    }",
           "}",
+          "",
+          "// Validate API authentication",
+          "pm.test('API authentication is working', function () {",
+          "    pm.expect(pm.response.code).to.not.equal(401);",
+          "});",
           "",
           "// Basic response validation",
           "pm.test('Status code is success', function () {",
           "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
           "});",
           "",
-          "console.log('Response Status: ' + pm.response.code);"
+          "// Log request details for debugging",
+          "console.log('📍 Request: ' + pm.request.method + ' ' + pm.request.url);",
+          "console.log('📊 Response Status: ' + pm.response.code + ' (' + pm.response.status + ')');",
+          "",
+          "// Track test scenario progress",
+          "const requestName = pm.info.requestName;",
+          "if (requestName.includes('1.')) {",
+          "    console.log('🚀 Test Scenario Step 1: Creating test courier...');",
+          "} else if (requestName.includes('2.')) {",
+          "    console.log('📍 Test Scenario Step 2: Submitting first location...');",
+          "} else if (requestName.includes('3.')) {",
+          "    console.log('🗺️ Test Scenario Step 3: Submitting second location...');",
+          "} else if (requestName.includes('4.')) {",
+          "    console.log('📏 Test Scenario Step 4: Calculating total distance...');",
+          "}"
         ]
       }
     }
