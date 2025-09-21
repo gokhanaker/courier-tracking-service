@@ -23,7 +23,7 @@ public class LocationTrackingService {
     private final LocationRepository locationRepository;
     private final CourierRepository courierRepository;
     private final StoreEntranceService storeEntranceService;
-    // Note: DistanceCalculationService dependency removed - distances calculated on-demand
+    private final DistanceCalculationService distanceCalculationService;
     
     @Transactional
     public LocationUpdateResponse updateCourierLocation(LocationUpdateRequest request) {        
@@ -33,7 +33,6 @@ public class LocationTrackingService {
                 "Courier not found with ID: " + request.getCourierId()));
         
         try {
-            // Create and save location
             Location location = new Location();
             location.setCourier(courier);
             location.setLatitude(request.getLatitude());
@@ -41,6 +40,9 @@ public class LocationTrackingService {
             location.setTimestamp(request.getTimestamp());
             
             Location savedLocation = locationRepository.save(location);
+            
+            // Update distance incrementally
+            distanceCalculationService.updateDistanceForNewLocation(courier.getId(), savedLocation);
             
             // Check for store entrances
             StoreEntrance storeEntrance = storeEntranceService.checkAndLogStoreEntrance(
