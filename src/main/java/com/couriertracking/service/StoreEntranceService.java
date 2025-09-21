@@ -44,7 +44,7 @@ public class StoreEntranceService {
             if (distanceMeters <= entranceRadiusMeters) {
                 // Check if entrance should be logged (cooldown check)
                 if (shouldLogEntrance(courier, store, timestamp)) {
-                    StoreEntrance entrance = logStoreEntrance(courier, store, timestamp);
+                    StoreEntrance entrance = saveStoreEntrance(courier, store, timestamp);
                     log.info("Store entrance logged: Courier {} entered {}", courier.getId(), store.getName());
                     return entrance;
                 }
@@ -62,7 +62,7 @@ public class StoreEntranceService {
         );
     }
     
-    private StoreEntrance logStoreEntrance(Courier courier, Store store, LocalDateTime timestamp) {
+    private StoreEntrance saveStoreEntrance(Courier courier, Store store, LocalDateTime timestamp) {
         StoreEntrance entrance = new StoreEntrance();
         entrance.setCourier(courier);
         entrance.setStore(store);
