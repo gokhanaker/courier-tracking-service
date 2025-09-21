@@ -9,13 +9,18 @@ import org.hibernate.annotations.UuidGenerator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "couriers")
+@Table(name = "couriers",
+       indexes = {
+           @Index(name = "idx_courier_email", columnList = "email"),
+           @Index(name = "idx_courier_phone", columnList = "phoneNumber"),
+       })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

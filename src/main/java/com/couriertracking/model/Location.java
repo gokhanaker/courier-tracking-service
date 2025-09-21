@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "locations",
        indexes = {
            @Index(name = "idx_courier_timestamp", columnList = "courier_id, timestamp"),
-           @Index(name = "idx_timestamp", columnList = "timestamp")
+           @Index(name = "idx_courier_id", columnList = "courier_id"),
        })
 @Data
 @NoArgsConstructor
