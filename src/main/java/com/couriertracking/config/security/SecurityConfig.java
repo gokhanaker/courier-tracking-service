@@ -12,17 +12,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-/**
- * Spring Security Configuration for API Key Authentication
- * 
- * This configuration:
- * - Disables CSRF (not needed for API key authentication)
- * - Sets session policy to stateless (no sessions needed)
- * - Protects all /api/** endpoints with API key authentication
- * - Allows public access to actuator endpoints and H2 console
- * - Adds custom API key filter before username/password filter
- * - Provides custom authentication entry point for unauthorized requests
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,36 +23,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            // Disable CSRF - not needed for API key authentication
             .csrf(AbstractHttpConfigurer::disable)
             
-            // Disable form login and HTTP basic auth
             .formLogin(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             
-            // Set session management to stateless
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             
-            // Configure authorization rules
             .authorizeHttpRequests(auth -> auth
-                // Allow public access to actuator endpoints
-                .requestMatchers("/actuator/**").permitAll()
-                
-                // Allow public access to H2 console (development only)
+                .requestMatchers("/actuator/**").permitAll()                
                 .requestMatchers("/h2-console/**").permitAll()
-                
-                // Require API_CLIENT role for all /api/** endpoints
                 .requestMatchers("/api/**").hasRole("API_CLIENT")
                 
                 // All other requests need authentication
                 .anyRequest().authenticated()
             )
             
-            // Add our custom API key filter before the standard username/password filter
             .addFilterBefore(apiKeyAuthFilter, UsernamePasswordAuthenticationFilter.class)
             
-            // Custom authentication entry point for unauthorized requests
             .exceptionHandling(ex -> ex.authenticationEntryPoint(
                 (request, response, authException) -> {
                     log.warn("Unauthorized access attempt to: {} from IP: {}", 

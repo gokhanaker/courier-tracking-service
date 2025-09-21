@@ -5,10 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-/**
- * Utility class for distance calculations using Strategy pattern
- * Delegates distance calculations to the configured strategy
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
