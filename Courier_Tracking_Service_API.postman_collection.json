@@ -96,8 +96,37 @@
                 "total-travel-distance"
               ]
             },
-            "description": "Get the total travel distance in kilometers for a specific courier."
-          }
+            "description": "Get the total travel distance for a specific courier. Returns a structured response with distance value and unit.\n\nResponse format:\n{\n  \"distance\": 15.75,\n  \"unit\": \"km\"\n}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response has correct structure\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson).to.have.property('distance');",
+                  "    pm.expect(responseJson).to.have.property('unit');",
+                  "});",
+                  "",
+                  "pm.test(\"Distance is a number\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.distance).to.be.a('number');",
+                  "});",
+                  "",
+                  "pm.test(\"Unit is kilometers\", function () {",
+                  "    const responseJson = pm.response.json();",
+                  "    pm.expect(responseJson.unit).to.equal('km');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
         }
       ]
     },
