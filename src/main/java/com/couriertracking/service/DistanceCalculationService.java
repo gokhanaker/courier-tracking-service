@@ -47,7 +47,7 @@ public class DistanceCalculationService {
     @Transactional
     public void updateDistanceForNewLocation(UUID courierId, Location newLocation) {        
         CourierDistance courierDistance = courierDistanceRepository.findByCourierId(courierId)
-            .orElse(initializeNewCourierDistance(courierId));
+            .orElseGet(() -> initializeNewCourierDistance(courierId));
         
         List<Location> recentLocations = locationRepository.findTop2ByCourierIdOrderByTimestampDesc(courierId);
         
