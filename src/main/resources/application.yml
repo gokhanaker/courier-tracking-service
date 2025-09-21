@@ -13,11 +13,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.H2Dialect
+        show_sql: false
 
   # H2 Console (for development)
   h2:
@@ -50,11 +51,26 @@ courier-tracking:
 # Logging Configuration
 logging:
   level:
-    com.couriertracking: DEBUG
-    org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
+    root: WARN
+    com.couriertracking: INFO
+    # Hibernate logs
+    org.hibernate: ERROR
+    org.hibernate.SQL: ERROR
+    org.hibernate.type: ERROR
+    org.hibernate.engine: ERROR
+    org.hibernate.jpa: ERROR
+    # Spring logs
+    org.springframework.security: ERROR
+    org.springframework.orm: ERROR
+    org.springframework.jdbc: ERROR
+    org.springframework.data: ERROR
+    org.springframework.boot: ERROR
+    org.springframework.web: ERROR
+    # App logs
+    com.couriertracking.service: INFO
+    com.couriertracking.controller: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    console: "%d{HH:mm:ss} - %msg%n"
 
 # Management/Actuator endpoints
 management:
