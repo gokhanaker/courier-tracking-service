@@ -35,6 +35,6 @@ public class HaversineDistanceStrategy implements DistanceCalculationStrategy {
     
     @Override
     public String getAlgorithmName() {
-        return "Haversine Distance (Great Circle)";
+        return "Haversine Distance";
     }
 }
