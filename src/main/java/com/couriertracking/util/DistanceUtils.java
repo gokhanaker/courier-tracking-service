@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j // Using Lombok for logging
 public class DistanceUtils {
     
     private final DistanceCalculationContext distanceCalculationContext;

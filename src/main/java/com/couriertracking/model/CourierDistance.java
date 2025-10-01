@@ -18,9 +18,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourierDistance {
+
     @Id
     @UuidGenerator
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -28,7 +28,7 @@ public class Courier {
     
     @Id
     @UuidGenerator
-    @Column(columnDefinition = "UUID", updatable = false, nullable = false)
+    @Column(columnDefinition = "UUID", updatable = false, nullable = false) // Ensure UUID is stored correctly
     private UUID id;
 
     @Column(nullable = false)
@@ -41,6 +41,6 @@ public class Courier {
     private String phoneNumber;
 
     @Column(nullable = false)
-    @CreationTimestamp
+    @CreationTimestamp // Automatically set the creation timestamp
     private LocalDateTime createdAt;
 }

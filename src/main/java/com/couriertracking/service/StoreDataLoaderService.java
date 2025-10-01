@@ -36,7 +36,6 @@ public class StoreDataLoaderService implements CommandLineRunner {
 
     private void loadStoreData() {
         try {
-            // Check if stores already exist
             if (storeRepository.count() > 0) {
                 log.debug("Store data already exists. Skipping data load.");
                 return;
