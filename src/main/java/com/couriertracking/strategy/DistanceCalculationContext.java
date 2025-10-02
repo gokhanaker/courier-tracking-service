@@ -12,7 +12,10 @@ public class DistanceCalculationContext {
     private final DistanceCalculationStrategy strategy;
     
     public DistanceCalculationContext(
+        // Select strategy based on yml configuration
         @Value("${courier-tracking.distance.calculation-algorithm:euclidean}") String algorithmName,
+        
+        // Inject all available strategies
         @Qualifier("euclidean") DistanceCalculationStrategy euclideanStrategy,
         @Qualifier("haversine") DistanceCalculationStrategy haversineStrategy
     ) {

@@ -12,6 +12,8 @@ import com.couriertracking.model.StoreEntrance;
 
 @Repository
 public interface StoreEntranceRepository extends JpaRepository<StoreEntrance, UUID> {
+
+     // Check if a courier has entered a specific store within time threshold
      boolean existsByCourierAndStoreAndEntranceTimeAfter(
         Courier courier, 
         Store store, 

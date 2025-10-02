@@ -38,12 +38,12 @@ courier-tracking:
   api:
     key: "CT-SECURE-API-KEY-12345"
     header-name: "X-API-Key"
-
+  # Store Configuration
   store:
     entrance-radius-meters: 100
     entrance-cooldown-minutes: 1
     data-file: classpath:stores.json
-
+  # Distance Calculation Configuration
   distance:
     calculation-algorithm: euclidean
     unit: kilometers

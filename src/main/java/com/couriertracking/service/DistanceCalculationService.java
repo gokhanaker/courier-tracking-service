@@ -27,7 +27,6 @@ public class DistanceCalculationService {
     private final CourierDistanceRepository courierDistanceRepository;
     private final DistanceUtils distanceUtils;
     
-    @Transactional(readOnly = true)
     public Double getTotalTravelDistance(UUID courierId) {        
         if (!courierRepository.existsById(courierId)) {
             throw new CourierNotFoundException("Courier not found with ID: " + courierId);

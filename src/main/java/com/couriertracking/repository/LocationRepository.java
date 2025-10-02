@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 import com.couriertracking.model.Location;
 
 public interface LocationRepository extends JpaRepository<Location, UUID> {
+
+    // Custom query to fetch the last two locations for a given courier
     @Query("SELECT l FROM Location l WHERE l.courier.id = :courierId ORDER BY l.timestamp DESC LIMIT 2")
     List<Location> findTop2ByCourierIdOrderByTimestampDesc(@Param("courierId") UUID courierId);
 }

@@ -25,7 +25,7 @@ public class CourierDistance {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "courier_id", nullable = false)
+    @JoinColumn(name = "courier_id", nullable = false , unique = true) // Ensure one-to-one relationship
     private Courier courier;
 
     @Column(name = "total_distance", nullable = false)
