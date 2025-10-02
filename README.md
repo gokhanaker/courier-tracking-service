@@ -14,7 +14,7 @@ A RESTful web service for tracking courier locations and monitoring store visits
 ### Technical Features
 
 - 🔐 **API Key Authentication** - Secure endpoints with custom authentication filter
-- ⚡ **Performance Optimization** - Database indexing and incremental distance caching
+- ⚡ **Performance Optimization** - Database indexing and incremental distance calculation
 - 🎯 **Strategy Pattern** - Configurable distance calculation algorithms (Euclidean/Haversine)
 - 🗄️ **H2 Database** - In-memory database for development and testing
 
@@ -231,3 +231,23 @@ While this is a case study implementation, the following production-ready featur
 - **Data Cleanup Scheduler** - Periodic cleanup of historical location data to prevent unlimited table growth
 - **Caching Layers** - Redis for frequently accessed data
 - **Connection Pooling** - Database connection management
+
+## Improved Business Logic Using Kafka & Redis
+
+Flow Overview:
+
+1. Kafka stores raw GPS events (event sourcing) keyed by `courierId` to guarantee per-courier ordering.
+2. A consumer keeps the last location per courier (using Redis).
+3. For each new location event:
+   - Fetch previous location state.
+   - Compute segment distance (Using Euclidean or Haversine distance calculation algorithm).
+   - Increment a running cumulative distance counter.
+   - Write updated total distance to Redis for O(1) reads.
+4. Periodically (or on delivery completion) persist the cumulative distance snapshot to the relational database.
+
+Benefits:
+
+- Ordered processing prevents race conditions.
+- Redis reduces database read/write pressure.
+- Kafka log enables replay
+- DB stores durable snapshots; Kafka remains the full history.
