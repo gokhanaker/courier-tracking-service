@@ -1,6 +1,6 @@
 # Courier Tracking Service
 
-A RESTful web service for tracking courier locations and monitoring store visits, built with **Java + Spring Boot** with a scalable, maintainable architecture.
+A RESTful web service for tracking courier locations and monitoring store visits, built with **Java + Spring Boot** with a maintainable architecture.
 
 ## ✨ Features
 
@@ -10,6 +10,7 @@ A RESTful web service for tracking courier locations and monitoring store visits
 - ✅ **Store Entrance Detection** - Automatically detect when couriers enter Migros stores (100m radius)
 - ✅ **Distance Calculation** - Calculate total travel distance for each courier
 - ✅ **Cooldown Management** - Prevent duplicate store entrance logging (1-minute cooldown)
+- ✅ **Redis Caching** - Cache total travel distance per courier for faster reads
 
 ### Technical Features
 
@@ -24,6 +25,7 @@ A RESTful web service for tracking courier locations and monitoring store visits
 - **Language:** Java 21
 - **Database:** H2 (in-memory)
 - **ORM:** Spring Data JPA / Hibernate
+- **Cache:** Redis (via Spring Data Redis)
 - **Testing:** JUnit 5, Mockito, Spring Test
 - **Build Tool:** Maven
 
@@ -71,6 +73,7 @@ ApiKeyAuthFilter → Spring Security Filter Chain → Controller
 
 - Java 21 or higher
 - Maven 3.6+
+- Redis 7+
 
 ### Installation & Setup
 
@@ -87,7 +90,30 @@ cd courier-tracking-service
 mvn clean compile
 ```
 
-3. **Run the application**
+3. (Recommended) Run Redis locally first
+
+macOS with Docker:
+
+```bash
+docker run -p 6379:6379 --name redis -d redis:7-alpine
+```
+
+macOS with Homebrew:
+
+```bash
+brew install redis
+brew services start redis
+```
+
+Verify Redis is reachable:
+
+```bash
+redis-cli -h localhost -p 6379 ping
+```
+
+You should see: `PONG`.
+
+4. **Run the application**
 
 ```bash
 mvn spring-boot:run
@@ -216,38 +242,3 @@ The system monitors 5 Migros stores in Istanbul:
 ```bash
 mvn test
 ```
-
-### Postman Collection
-
-Import `Courier_Tracking_Service_API.postman_collection.json` for:
-
-- **Complete API Testing** - All endpoints with authentication
-- **Test Scenarios** - End-to-end workflow validation
-
-## Production Considerations
-
-While this is a case study implementation, the following production-ready features were considered during design:
-
-- **Data Cleanup Scheduler** - Periodic cleanup of historical location data to prevent unlimited table growth
-- **Caching Layers** - Redis for frequently accessed data
-- **Connection Pooling** - Database connection management
-
-## Improved Business Logic Using Kafka & Redis
-
-Flow Overview:
-
-1. Kafka stores raw GPS events (event sourcing) keyed by `courierId` to guarantee per-courier ordering.
-2. A consumer keeps the last location per courier (using Redis).
-3. For each new location event:
-   - Fetch previous location state.
-   - Compute segment distance (Using Euclidean or Haversine distance calculation algorithm).
-   - Increment a running cumulative distance counter.
-   - Write updated total distance to Redis for O(1) reads.
-4. Periodically (or on delivery completion) persist the cumulative distance snapshot to the relational database.
-
-Benefits:
-
-- Ordered processing prevents race conditions.
-- Redis reduces database read/write pressure.
-- Kafka log enables replay
-- DB stores durable snapshots; Kafka remains the full history.

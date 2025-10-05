@@ -90,6 +90,7 @@ public class DistanceCalculationService {
             
             // Update cache with new total distance
             if (courierDistanceCache != null) {
+                log.debug("Writing updated total distance to cache for courier {} -> {} km", courierId, String.format("%.3f", newTotalDistance));
                 courierDistanceCache.saveToCache(courierId, newTotalDistance);
             }
 
