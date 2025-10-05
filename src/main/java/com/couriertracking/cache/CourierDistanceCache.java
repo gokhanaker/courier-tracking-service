@@ -23,9 +23,7 @@ public class CourierDistanceCache {
     }
 
     public Optional<Double> getFromCache(UUID courierId) {
-       if(redis == null) return Optional.empty();
-       
-       try {
+        try {
             String v = redis.opsForValue().get(key(courierId));
             return v == null ? Optional.empty() : Optional.of(Double.parseDouble(v));
         } catch (Exception e) {
@@ -35,8 +33,6 @@ public class CourierDistanceCache {
     }
 
     public void saveToCache(UUID courierId, Double distance) {
-        if(redis == null) return;
-        
         try {
             redis.opsForValue().set(key(courierId), distance.toString());
             redis.expire(key(courierId), java.time.Duration.ofHours(CACHE_TTL_HOURS));
@@ -46,8 +42,6 @@ public class CourierDistanceCache {
     }
 
     public void evictFromCache(UUID courierId) {
-        if(redis == null) return;
-        
         try {
             redis.delete(key(courierId));
         } catch (Exception e) {
