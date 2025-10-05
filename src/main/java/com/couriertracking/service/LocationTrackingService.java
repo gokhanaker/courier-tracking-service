@@ -10,6 +10,8 @@ import com.couriertracking.model.Location;
 import com.couriertracking.model.StoreEntrance;
 import com.couriertracking.repository.CourierRepository;
 import com.couriertracking.repository.LocationRepository;
+import com.couriertracking.service.StoreEntranceService;
+import com.couriertracking.service.DistanceCalculationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

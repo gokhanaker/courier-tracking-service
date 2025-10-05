@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(LocationController.class)
-@Import({com.couriertracking.config.security.SecurityConfig.class, com.couriertracking.config.security.ApiKeyAuthFilter.class})
+@Import({com.couriertracking.security.SecurityConfig.class, com.couriertracking.security.ApiKeyAuthFilter.class})
 @TestPropertySource(properties = {
     "courier-tracking.api.key=CT-SECURE-API-KEY-12345",
     "courier-tracking.api.header-name=X-API-Key"

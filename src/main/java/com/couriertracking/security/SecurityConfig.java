@@ -1,4 +1,4 @@
-package com.couriertracking.config.security;
+package com.couriertracking.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

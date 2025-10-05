@@ -1,4 +1,4 @@
-package com.couriertracking.config.security;
+package com.couriertracking.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
