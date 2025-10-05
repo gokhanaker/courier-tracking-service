@@ -1,5 +1,6 @@
 package com.couriertracking.service;
 
+import com.couriertracking.cache.CourierDistanceCache;
 import com.couriertracking.exception.CourierNotFoundException;
 import com.couriertracking.model.Courier;
 import com.couriertracking.model.CourierDistance;
@@ -42,6 +43,9 @@ class DistanceCalculationServiceTest {
 
     @Mock
     private DistanceUtils distanceUtils;
+
+    @Mock
+    private CourierDistanceCache courierDistanceCache;
 
     @InjectMocks
     private DistanceCalculationService distanceCalculationService;
@@ -87,6 +91,7 @@ class DistanceCalculationServiceTest {
     @DisplayName("Should return total distance when courier distance exists")
     void shouldReturnTotalDistanceWhenExists() {
         when(courierRepository.existsById(courierId)).thenReturn(true);
+        when(courierDistanceCache.getFromCache(courierId)).thenReturn(Optional.empty()); // Cache miss
         when(courierDistanceRepository.findByCourierId(courierId))
                 .thenReturn(Optional.of(courierDistance));
 
@@ -94,13 +99,16 @@ class DistanceCalculationServiceTest {
 
         assertThat(result).isEqualTo(5.0);
         verify(courierRepository).existsById(courierId);
+        verify(courierDistanceCache).getFromCache(courierId);
         verify(courierDistanceRepository).findByCourierId(courierId);
+        verify(courierDistanceCache).saveToCache(courierId, 5.0); // Verify cache backfill
     }
 
     @Test
     @DisplayName("Should return 0.0 when no distance record exists")
     void shouldReturnZeroWhenNoDistanceRecord() {
         when(courierRepository.existsById(courierId)).thenReturn(true);
+        when(courierDistanceCache.getFromCache(courierId)).thenReturn(Optional.empty()); // Cache miss
         when(courierDistanceRepository.findByCourierId(courierId))
                 .thenReturn(Optional.empty());
 
@@ -108,7 +116,22 @@ class DistanceCalculationServiceTest {
 
         assertThat(result).isEqualTo(0.0);
         verify(courierRepository).existsById(courierId);
+        verify(courierDistanceCache).getFromCache(courierId);
         verify(courierDistanceRepository).findByCourierId(courierId);
+    }
+
+    @Test
+    @DisplayName("Should return cached distance when available in cache")
+    void shouldReturnCachedDistanceWhenAvailable() {
+        when(courierRepository.existsById(courierId)).thenReturn(true);
+        when(courierDistanceCache.getFromCache(courierId)).thenReturn(Optional.of(7.5)); // Cache hit
+
+        Double result = distanceCalculationService.getTotalTravelDistance(courierId);
+
+        assertThat(result).isEqualTo(7.5);
+        verify(courierRepository).existsById(courierId);
+        verify(courierDistanceCache).getFromCache(courierId);
+        verifyNoInteractions(courierDistanceRepository); // Should not query database
     }
 
     @Test
@@ -142,7 +165,8 @@ class DistanceCalculationServiceTest {
 
         distanceCalculationService.updateDistanceForNewLocation(courierId, location2);
 
-        verify(courierDistanceRepository).save(courierDistance);        
+        verify(courierDistanceRepository).save(courierDistance);
+        verify(courierDistanceCache).saveToCache(courierId, expectedNewTotal);
         assertThat(courierDistance.getTotalDistance()).isEqualTo(expectedNewTotal);
     }
 
