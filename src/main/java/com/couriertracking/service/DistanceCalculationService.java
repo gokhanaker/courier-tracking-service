@@ -1,5 +1,6 @@
 package com.couriertracking.service;
 
+import com.couriertracking.cache.CourierDistanceCache;
 import com.couriertracking.exception.CourierNotFoundException;
 import com.couriertracking.model.Courier;
 import com.couriertracking.model.CourierDistance;
@@ -10,6 +11,8 @@ import com.couriertracking.repository.LocationRepository;
 import com.couriertracking.util.DistanceUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,17 +29,35 @@ public class DistanceCalculationService {
     private final CourierRepository courierRepository;
     private final CourierDistanceRepository courierDistanceRepository;
     private final DistanceUtils distanceUtils;
+
+    @Autowired
+    private CourierDistanceCache courierDistanceCache;
     
     public Double getTotalTravelDistance(UUID courierId) {        
         if (!courierRepository.existsById(courierId)) {
             throw new CourierNotFoundException("Courier not found with ID: " + courierId);
         }
         
+        // Retrieve from cache first (if cache is available)
+        if (courierDistanceCache != null) {
+            Optional<Double> cachedDistance = courierDistanceCache.getFromCache(courierId);
+            if (cachedDistance.isPresent()) {
+                log.info("Cache hit for courier {}: {} km", courierId, String.format("%.3f", cachedDistance.get()));
+                return cachedDistance.get();
+            }
+        }
+
+        // Cache miss - retrieve from DB
+        log.info("Cache miss for courier {} - querying database", courierId);
         Optional<CourierDistance> courierDistance = courierDistanceRepository.findByCourierId(courierId);
         
         if (courierDistance.isPresent()) {
             Double totalDistance = courierDistance.get().getTotalDistance();
             log.info("Retrieved distance for courier {}: {} km", courierId, String.format("%.3f", totalDistance));
+            // Backfill cache
+            if (courierDistanceCache != null) {
+                courierDistanceCache.saveToCache(courierId, totalDistance);
+            }
             return totalDistance;
         }
 
@@ -67,6 +88,11 @@ public class DistanceCalculationService {
             courierDistance.setTotalDistance(newTotalDistance);
             courierDistanceRepository.save(courierDistance);
             
+            // Update cache with new total distance
+            if (courierDistanceCache != null) {
+                courierDistanceCache.saveToCache(courierId, newTotalDistance);
+            }
+
             log.debug("Updated distance for courier {}: +{} km, total: {} km", 
                 courierId, String.format("%.3f", segmentDistance), String.format("%.3f", newTotalDistance));
         } else {
